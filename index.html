@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickRec - Professional Screen Recorder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="top-bar">
+        <!-- Notification Banner Container -->
+        <div id="notificationBanner" class="notification-banner hidden"></div>
+        <div class="logo">
+
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="14" stroke="#dc2626" stroke-width="2" />
+                <circle cx="16" cy="16" r="6" fill="#dc2626" />
+            </svg>
+            <span class="logo-text">QuickRec</span>
+        </div>
+        <div class="top-actions">
+            <button class="icon-btn" id="settingsBtn" title="Settings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 1v6m0 6v6m0-6h6m-6 0H6" />
+                </svg>
+            </button>
+            <button class="icon-btn" id="folderBtn" title="Open Recordings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                </svg>
+            </button>
+            <button class="icon-btn" id="notificationBellBtn" title="Notifications">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                <span id="notificationBadge" class="badge hidden">0</span>
+            </button>
+            <button class="icon-btn" title="Help">
+
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <circle cx="12" cy="17" r="0.5" fill="currentColor" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <button class="nav-item" id="navRecordings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                        <polyline points="13 2 13 9 20 9" />
+                    </svg>
+                    <span>Recordings</span>
+                </button>
+                <button class="nav-item active" id="navPreview">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg>
+                    <span>Preview</span>
+                </button>
+            </nav>
+
+            <!-- Recordings List -->
+            <div class="recordings-list hidden" id="recordingsList">
+                <div class="recordings-header">
+                    <h3>Recent Recordings</h3>
+                    <button class="refresh-btn" id="refreshRecordings" title="Refresh">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="recordings-content" id="recordingsContent">
+                    <p class="no-recordings">No recordings yet</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Preview Area -->
+        <main class="preview-area">
+            <div class="preview-container">
+                <div class="preview-screen">
+                    <!-- Canvas for recording preview -->
+                    <canvas id="compositorCanvas"></canvas>
+
+                    <!-- Hidden video elements -->
+                    <video id="sourceVideo" autoplay muted playsinline class="hidden-source"></video>
+                    <video id="facecamVideo" autoplay muted playsinline class="hidden-source"></video>
+
+                    <!-- Placeholder when no source selected -->
+                    <div class="preview-placeholder" id="placeholderOverlay">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" opacity="0.3">
+                            <rect x="2" y="3" width="20" height="14" rx="2" />
+                            <line x1="8" y1="21" x2="16" y2="21" />
+                            <line x1="12" y1="17" x2="12" y2="21" />
+                        </svg>
+                        <p class="preview-text">Click "Select Source" to begin</p>
+                    </div>
+
+                    <!-- Countdown Overlay -->
+                    <div id="countdownOverlay" class="countdown-overlay hidden">3</div>
+
+                    <!-- Recording Timer -->
+                    <div class="timer" id="timer">00:00:00</div>
+                </div>
+            </div>
+
+            <!-- Quick Action Buttons on Preview -->
+            <div class="preview-actions">
+                <button class="preview-action-btn" id="selectSourceBtn" title="Select Source">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <path d="M21 15l-5-5L5 21" />
+                    </svg>
+                    <span>Select Source</span>
+                </button>
+                <button class="preview-action-btn" id="screenshotBtn" title="Screenshot">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                    </svg>
+                    <span>Screenshot</span>
+                </button>
+            </div>
+        </main>
+
+        <!-- Right Control Panel -->
+        <aside class="control-panel">
+            <!-- Mode Selector -->
+            <section class="control-section">
+                <h3 class="section-title">Recording Mode</h3>
+                <div class="mode-grid">
+                    <button class="mode-btn active" data-mode="screen">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" />
+                        </svg>
+                        <span>Screen</span>
+                    </button>
+                    <button class="mode-btn" data-mode="window">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <rect x="7" y="7" width="10" height="10" />
+                        </svg>
+                        <span>Window</span>
+                    </button>
+                    <button class="mode-btn" data-mode="area">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+                        </svg>
+                        <span>Area</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Video Settings -->
+            <section class="control-section">
+                <h3 class="section-title">Video Settings</h3>
+                <div class="input-group">
+                    <label>Video Quality</label>
+                    <select class="select-input" id="qualitySelect">
+                        <option value="1080">1920 x 1080 (Full HD)</option>
+                        <option value="2160">3840 x 2160 (4K)</option>
+                        <option value="720">1280 x 720 (HD)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Frame Rate</label>
+                    <select class="select-input" id="fpsSelect">
+                        <option value="60">60 FPS</option>
+                        <option value="30">30 FPS</option>
+                        <option value="120">120 FPS</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Audio Settings -->
+            <section class="control-section">
+                <h3 class="section-title">Audio Source</h3>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="audioToggle" checked>
+                        <span class="checkbox-custom"></span>
+                        <span>System Audio</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="micToggle">
+                        <span class="checkbox-custom"></span>
+                        <span>Microphone</span>
+                    </label>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Notification Drawer -->
+        <div id="notificationDrawer" class="notification-drawer hidden">
+            <div class="drawer-header">
+                <h3>Notifications</h3>
+                <button id="closeDrawerBtn" class="close-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            <div id="notificationList" class="drawer-content">
+                <p class="no-notifications">No new messages</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bottom Recording Controls -->
+    <footer class="bottom-bar">
+        <div class="recording-controls">
+            <button class="settings-bottom-btn" id="settingsBottomBtn" title="Settings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 1v6m0 6v6m0-6h6m-6 0H6" />
+                </svg>
+            </button>
+            <button class="rec-button" id="startBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="8" />
+                </svg>
+                <span>REC</span>
+            </button>
+            <button class="rec-button pause-btn hidden" id="pauseBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="4" width="4" height="16" />
+                    <rect x="14" y="4" width="4" height="16" />
+                </svg>
+                <span>PAUSE</span>
+            </button>
+            <button class="rec-button resume-btn hidden" id="resumeBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span>RESUME</span>
+            </button>
+            <button class="rec-button stop-btn hidden" id="stopBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="6" width="12" height="12" />
+                </svg>
+                <span>STOP</span>
+            </button>
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div class="shortcut-hint">Press F9 to start/stop recording</div>
+        </div>
+    </footer>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button id="closeSettingsBtn" class="close-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <label>Save Directory</label>
+                    <div class="path-select">
+                        <input type="text" id="savePathInput" readonly>
+                        <button id="changePathBtn" class="btn-small">Change</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Export Format</label>
+                    <select id="formatSelect" class="select-input">
+                        <option value="webm">WebM (Recommended)</option>
+                        <option value="mp4">MP4 (Experimental)</option>
+                    </select>
+                    <p class="settings-hint">
+                        WebM is the native format for browser recording. MP4 support depends on system codecs.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Source Picker Modal -->
+    <div id="sourceModal" class="modal hidden">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Select Source</h2>
+                <button id="closeSourceBtn" class="close-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            <div class="source-grid" id="sourceGrid">
+                <!-- Thumbnails injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal hidden">
+        <div class="modal-content large" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h2>Recording Review</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button id="openFolderReviewBtn" class="btn-small"
+                        style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color);">Open
+                        Folder</button>
+                    <button id="closeReviewBtn" class="close-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="video-player-body">
+                    <video id="recordingPlayer" controls playsinline></video>
+                </div>
+                <!-- <div class="review-actions" style="margin-top: 10px; display: flex; justify-content: flex-end;"></div> -->
+            </div>
+        </div>
+    </div>
+
+    <!-- System Overlay (Force Update / Block) -->
+    <div id="systemOverlay" class="system-overlay hidden">
+        <div class="system-overlay-content">
+            <div class="system-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+            </div>
+            <h2 id="systemOverlayTitle">System Message</h2>
+            <p id="systemOverlayMessage">Access restricted.</p>
+            <div id="systemOverlayAction" class="system-overlay-action hidden">
+                <button id="updateBtn" class="rec-button">UPDATE NOW</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="drawing.js"></script>
+    <script src="script.js"></script>
+</body>
+
+
+</html>

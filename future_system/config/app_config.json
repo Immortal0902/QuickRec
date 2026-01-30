@@ -1,0 +1,13 @@
+{
+    "app_name": "QuickRec",
+    "current_version": "1.0.0",
+    "app_id": "psr_win_001",
+    "remote_endpoint": "https://raw.githubusercontent.com/Immortal0902/pro-screen-recorder-status/refs/heads/main/pro-screen-recorder-upload/status.json",
+    "fallback_endpoint": "https://your-backup-site.com/status.json",
+    "update_url": "https://your-website.com/downloads",
+    "settings": {
+        "check_interval_minutes": 60,
+        "auto_update_enabled": false,
+        "offline_mode_allowed": true
+    }
+}

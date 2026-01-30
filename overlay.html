@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="overlay.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overlay</title>
+</head>
+
+<body>
+    <div class="pill drag-region">
+        <div class="indicator" id="statusIndicator"></div>
+        <span id="timer">00:00:00</span>
+        <div class="divider"></div>
+
+        <!-- Controls -->
+        <button id="recordBtn" class="no-drag hidden" title="Record">
+            <i class="fa-solid fa-record"></i>
+        </button>
+        <button id="pauseBtn" class="no-drag" title="Pause">
+            <i class="fa-solid fa-pause"></i>
+        </button>
+        <button id="resumeBtn" class="no-drag hidden" title="Resume">
+            <i class="fa-solid fa-play"></i>
+        </button>
+        <button id="stopBtn" class="no-drag btn-danger" title="Stop">
+            <i class="fa-solid fa-stop"></i>
+        </button>
+
+        <button id="micBtn" class="no-drag active" title="Toggle Mic">
+            <i class="fa-solid fa-microphone"></i>
+        </button>
+
+        <div class="divider"></div>
+
+        <button id="shotBtn" class="no-drag" title="Take Screenshot">
+            <i class="fa-solid fa-camera-retro"></i>
+        </button>
+    </div>
+
+    <div id="toast" class="toast-container">Mic ON</div>
+    <script src="overlay.js"></script>
+</body>
+
+</html>
